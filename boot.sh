@@ -1,4 +1,8 @@
-set -e
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export UMBRARCH_ONLINE_INSTALL="${UMBRARCH_ONLINE_INSTALL:-false}"
 
 ascii_art=' █    ██  ███▄ ▄███▓ ▄▄▄▄    ██▀███   ▄▄▄       ██▀███   ▄████▄   ██░ ██ 
  ██  ▓██▒▓██▒▀█▀ ██▒▓█████▄ ▓██ ▒ ██▒▒████▄    ▓██ ▒ ██▒▒██▀ ▀█  ▓██░ ██▒
@@ -11,4 +15,52 @@ ascii_art=' █    ██  ███▄ ▄███▓ ▄▄▄▄    ██�
    ░            ░    ░         ░           ░  ░   ░     ░ ░       ░  ░  ░
                           ░                             ░                '
 
-echo -e "$ascii_art"
+clear
+echo "$ascii_art"
+echo ""
+echo "Welcome to UmbrArch installation"
+echo ""
+
+if [[ $EUID -eq 0 ]]; then
+    echo "[WARN] This script is running as root."
+    echo "[WARN] UmbrArch should normally be installed as a regular user."
+    echo "[WARN] Sudo will be invoked when necessary for privileged operations."
+    echo ""
+    read -p "Continue as root anyway? [y/N]: " -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Installation cancelled."
+        exit 1
+    fi
+fi
+
+# Determine if running in online mode (curl | bash) or local mode
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ ! -f "$SCRIPT_DIR/install.sh" ]]; then
+    echo "Preparing online installation..."
+    sudo pacman -Syu --noconfirm --needed git
+    
+    UMBRARCH_REPO="${UMBRARCH_REPO:-tuukkateppola/umbrarch}"
+    
+    echo "Cloning UmbrArch from: https://github.com/${UMBRARCH_REPO}.git"
+    rm -rf ~/.local/share/umbrarch/
+    git clone "https://github.com/${UMBRARCH_REPO}.git" ~/.local/share/umbrarch >/dev/null
+    
+    UMBRARCH_REF="${UMBRARCH_REF:-master}"
+    if [[ $UMBRARCH_REF != "master" ]]; then
+        echo "Using branch: $UMBRARCH_REF"
+        cd ~/.local/share/umbrarch
+        git fetch origin "${UMBRARCH_REF}" && git checkout "${UMBRARCH_REF}"
+        cd - >/dev/null
+    fi
+    
+    echo ""
+    echo "Installation starting..."
+    UMBRARCH_ONLINE_INSTALL=true
+    cd ~/.local/share/umbrarch
+    source install.sh
+else
+    cd "$SCRIPT_DIR"
+    source install.sh
+fi

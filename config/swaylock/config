@@ -1,0 +1,25 @@
+# Swaylock configuration
+# See swaylock(1) for all available options
+
+# Background color when no image is set
+color=000000
+
+# Enable the unlock indicator
+indicator
+
+# Indicator settings
+indicator-radius=100
+indicator-thickness=7
+
+# Colors
+ring-color=ffffff
+inside-color=000000
+text-color=ffffff
+
+# Show failed attempts
+show-failed-attempts
+
+# Font settings
+font="JetBrainsMono Nerd Font"
+font-size=24
+

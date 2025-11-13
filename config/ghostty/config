@@ -1,0 +1,9 @@
+#theme = Monokai Pro Machine
+
+font-family = "JetBrainsMono Nerd Font", monospace
+#font-size = 15
+
+background-opacity = 0.7
+background-blur = 10
+
+keybind = alt+r=reload_config
