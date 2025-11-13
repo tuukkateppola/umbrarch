@@ -1,6 +1,6 @@
 # UmbrArch
 
-UmbrArch is an opinionated Arch Linux setup influenced technically by [omarchy.org](https://omarchy.org).
+UmbrArch is an opinionated Arch Linux setup influenced technically by [omarchy](https://github.com/basecamp/omarchy).
 
 ## Usage
 
