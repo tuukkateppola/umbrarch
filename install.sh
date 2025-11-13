@@ -3,6 +3,28 @@
 
 set -euo pipefail
 
+# Determine the repository root directory and change to it
+# This ensures all relative paths work correctly regardless of where the script is sourced from
+# When install.sh is sourced, BASH_SOURCE[0] points to install.sh, so dirname gives us the repo root
+if [[ -n "${BASH_SOURCE[0]:-}" ]] && [[ "${BASH_SOURCE[0]}" != "-" ]]; then
+    REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    cd "$REPO_ROOT" || {
+        echo "[ERROR] Failed to change to repository root: $REPO_ROOT" >&2
+        exit 1
+    }
+else
+    # If we can't determine the script location, assume we're in the repo root
+    # and log a warning
+    echo "[WARN] Could not determine script location, assuming current directory is repo root" >&2
+fi
+
+# Verify we're in the correct directory by checking for install/lib.sh
+if [[ ! -f "install/lib.sh" ]]; then
+    echo "[ERROR] install/lib.sh not found. Current directory: $(pwd)" >&2
+    echo "[ERROR] Please ensure install.sh is run from the repository root." >&2
+    exit 1
+fi
+
 source install/lib.sh
 
 log_info "=== UmbrArch Installation Started ==="
@@ -51,8 +73,14 @@ if [[ -n "${UMBRARCH_SELECTED_FEATURES:-}" ]]; then
         # Skip empty entries
         [[ -z "$feat_script" ]] && continue
         
+        feat_script_path="install/features/${feat_script}.sh"
+        if [[ ! -f "$feat_script_path" ]]; then
+            log_error "Feature script not found: $feat_script_path (current directory: $(pwd))"
+            exit 1
+        fi
+        
         log_info "Applying feature: $feat_script"
-        source "install/features/${feat_script}.sh"
+        source "$feat_script_path"
         log_success "Feature applied: $feat_script"
     done
 else
