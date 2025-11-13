@@ -32,7 +32,7 @@ log_info "Configuring greetd autologin..."
 
 log_info "Installing greetd and tuigreet..."
 ensure_pacman_pkg greetd
-ensure_pacman_pkg tuigreet
+ensure_pacman_pkg greetd-tuigreet
 
 NIRI_SESSION_WRAPPER="/usr/local/bin/niri-session"
 NIRI_SESSION_BINARY="/usr/bin/niri-session"
