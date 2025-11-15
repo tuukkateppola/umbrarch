@@ -25,13 +25,15 @@ log_info "Building yay..."
 makepkg -s --noconfirm
 
 log_info "Installing yay..."
-PKG_FILE=$(ls -t *.pkg.tar* 2>/dev/null | head -1)
-if [[ -n "$PKG_FILE" ]]; then
-    sudo pacman -U --noconfirm "$PKG_FILE"
-else
+PKG_FILE=$(ls -t yay-bin-*.pkg.tar* 2>/dev/null | grep -v "debug" | head -1)
+
+if [[ -z "$PKG_FILE" ]]; then
     log_error "Failed to find built package file"
     exit 1
 fi
+
+log_info "Installing package: $PKG_FILE"
+sudo pacman -U --noconfirm "$PKG_FILE"
 
 cd "$START_DIR" || true
 
