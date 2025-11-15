@@ -3,40 +3,39 @@
 
 set -euo pipefail
 
-# Determine the repository root directory and change to it
-# This ensures all relative paths work correctly regardless of where the script is sourced from
+# Determine the repository root directory
 # When install.sh is sourced, BASH_SOURCE[0] points to install.sh, so dirname gives us the repo root
 if [[ -n "${BASH_SOURCE[0]:-}" ]] && [[ "${BASH_SOURCE[0]}" != "-" ]]; then
-    REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    cd "$REPO_ROOT" || {
-        echo "[ERROR] Failed to change to repository root: $REPO_ROOT" >&2
-        exit 1
-    }
+    UMBRARCH_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 else
-    # If we can't determine the script location, assume we're in the repo root
-    # and log a warning
     echo "[WARN] Could not determine script location, assuming current directory is repo root" >&2
+    UMBRARCH_PATH="$(pwd)"
 fi
 
-# Verify we're in the correct directory by checking for install/lib.sh
-if [[ ! -f "install/lib.sh" ]]; then
-    echo "[ERROR] install/lib.sh not found. Current directory: $(pwd)" >&2
+
+UMBRARCH_INSTALL="$UMBRARCH_PATH/install"
+UMBRARCH_CONFIG="$UMBRARCH_PATH/config"
+export UMBRARCH_PATH
+export UMBRARCH_INSTALL
+export UMBRARCH_CONFIG
+
+if [[ ! -f "$UMBRARCH_INSTALL/lib.sh" ]]; then
+    echo "[ERROR] install/lib.sh not found at $UMBRARCH_INSTALL/lib.sh. Current directory: $(pwd)" >&2
     echo "[ERROR] Please ensure install.sh is run from the repository root." >&2
     exit 1
 fi
-
-source install/lib.sh
+source "$UMBRARCH_INSTALL/lib.sh"
 
 log_info "=== UmbrArch Installation Started ==="
 
 log_info "Running preflight checks..."
-source install/preflight.sh
+source "$UMBRARCH_INSTALL/preflight.sh"
 
 log_info "Loading installation targets..."
-source install/targets.sh
+source "$UMBRARCH_INSTALL/targets.sh"
 
 log_info "Ensuring yay AUR helper is available..."
-source install/yay.sh
+source "$UMBRARCH_INSTALL/yay.sh"
 
 log_info "=== Installing Packages ==="
 
@@ -48,10 +47,12 @@ if [[ -n "${UMBRARCH_SELECTED_PACKAGES:-}" ]]; then
         # Skip empty entries
         [[ -z "$pkg_script" ]] && continue
         
+        pkg_script_path="$UMBRARCH_INSTALL/packages/${pkg_script}.sh"
+        
         # Check if custom install script exists
-        if [[ -f "install/packages/${pkg_script}.sh" ]]; then
+        if [[ -f "$pkg_script_path" ]]; then
             log_info "Installing package: $pkg_script (custom script)"
-            source "install/packages/${pkg_script}.sh"
+            source "$pkg_script_path"
             log_success "Package installed: $pkg_script"
         else
             log_info "Installing package: $pkg_script"
@@ -73,9 +74,9 @@ if [[ -n "${UMBRARCH_SELECTED_FEATURES:-}" ]]; then
         # Skip empty entries
         [[ -z "$feat_script" ]] && continue
         
-        feat_script_path="install/features/${feat_script}.sh"
+        feat_script_path="$UMBRARCH_INSTALL/features/${feat_script}.sh"
         if [[ ! -f "$feat_script_path" ]]; then
-            log_error "Feature script not found: $feat_script_path (current directory: $(pwd))"
+            log_error "Feature script not found: $feat_script_path (UMBRARCH_PATH: $UMBRARCH_PATH, current directory: $(pwd))"
             exit 1
         fi
         
@@ -90,9 +91,13 @@ fi
 log_success "=== UmbrArch Installation Complete ==="
 log_info "Review the installation log at: $UMBRARCH_LOG_FILE"
 
-if [[ "${UMBRARCH_ONLINE_INSTALL:-false}" == "true" ]]; then
+if [[ "${UMBRARCH_IS_ONLINE_INSTALL:-false}" == "true" ]]; then
     log_info "Cleaning up installation files..."
     rm -rf ~/.local/share/umbrarch/
     log_info "Removed temporary installation directory"
+    cd ~ || {
+        log_error "Failed to change to home directory"
+        exit 1
+    }
 fi
 

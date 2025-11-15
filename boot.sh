@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-export UMBRARCH_ONLINE_INSTALL="${UMBRARCH_ONLINE_INSTALL:-false}"
+export UMBRARCH_IS_ONLINE_INSTALL="${UMBRARCH_IS_ONLINE_INSTALL:-false}"
 
 ascii_art=' █    ██  ███▄ ▄███▓ ▄▄▄▄    ██▀███   ▄▄▄       ██▀███   ▄████▄   ██░ ██ 
  ██  ▓██▒▓██▒▀█▀ ██▒▓█████▄ ▓██ ▒ ██▒▒████▄    ▓██ ▒ ██▒▒██▀ ▀█  ▓██░ ██▒
@@ -67,7 +67,7 @@ if [[ -z "$SCRIPT_DIR" ]] || [[ ! -f "$SCRIPT_DIR/install.sh" ]]; then
     
     echo ""
     echo "Installation starting..."
-    UMBRARCH_ONLINE_INSTALL=true
+    UMBRARCH_IS_ONLINE_INSTALL=true
     cd ~/.local/share/umbrarch
     source install.sh
 else

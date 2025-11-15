@@ -6,7 +6,7 @@ log_info "Installing swaylock..."
 ensure_pacman_pkg swaylock
 
 log_info "Deploying swaylock configuration..."
-deploy_config config/swaylock ~/.config/swaylock
+deploy_config "$UMBRARCH_CONFIG/swaylock" ~/.config/swaylock
 
 log_success "swaylock installed and configured"
 

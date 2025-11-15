@@ -6,13 +6,13 @@ log_info "Installing fuzzel..."
 ensure_pacman_pkg fuzzel
 
 log_info "Deploying fuzzel configuration..."
-deploy_config config/fuzzel/fuzzel.ini ~/.config/fuzzel/fuzzel.ini
+deploy_config "$UMBRARCH_CONFIG/fuzzel/fuzzel.ini" ~/.config/fuzzel/fuzzel.ini
 
 log_info "Deploying .desktop overrides..."
 ensure_dir ~/.local/share/applications
 
-if [[ -d "applications" ]]; then
-    for desktop_file in applications/*.desktop; do
+if [[ -d "$UMBRARCH_PATH/applications" ]]; then
+    for desktop_file in "$UMBRARCH_PATH/applications"/*.desktop; do
         if [[ -f "$desktop_file" ]]; then
             filename=$(basename "$desktop_file")
             deploy_config "$desktop_file" ~/.local/share/applications/"$filename"

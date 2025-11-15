@@ -6,7 +6,7 @@ log_info "Installing mako..."
 ensure_pacman_pkg mako
 
 log_info "Deploying mako configuration..."
-deploy_config config/mako/config ~/.config/mako/config
+deploy_config "$UMBRARCH_CONFIG/mako/config" ~/.config/mako/config
 
 log_info "Enabling and starting mako.service..."
 if ! systemctl --user is-enabled mako.service &>/dev/null; then

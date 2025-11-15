@@ -6,7 +6,7 @@
 # Packages to install
 # - If a script exists in install/packages/, it will be sourced
 # - Otherwise, the package will be installed directly via yay
-PACKAGES=(
+export PACKAGES=(
   jetbrains-font
   niri
   waybar
@@ -22,7 +22,7 @@ PACKAGES=(
 )
 
 # Features to configure (must have corresponding scripts in install/features/)
-FEATURES=(
+export FEATURES=(
   x-wayland-compat
   git-config
   gtk-theme

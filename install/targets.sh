@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Target selector - loads manifest and exports package/feature lists
 
-MANIFEST_FILE="install/targets/default.sh"
+MANIFEST_FILE="$UMBRARCH_INSTALL/targets/default.sh"
 
 log_info "Loading installation targets from $MANIFEST_FILE"
 
