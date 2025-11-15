@@ -273,6 +273,8 @@ environment {
     // Disable portal detection so libadwaita apps (like Nautilus 49+) read gsettings directly
     // This is required for dark theme to work with libadwaita apps
     ADW_DISABLE_PORTAL "1"
+    // Set GTK theme globally so all applications (including child processes) use dark theme
+    GTK_THEME "Adwaita-dark"
 }
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
