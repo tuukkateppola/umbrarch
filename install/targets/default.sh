@@ -26,6 +26,7 @@ export PACKAGES=(
 export FEATURES=(
   x-wayland-compat
   git-config
+  work-on-umbrarch
   gtk-theme
   vm-support
   autologin-greetd
