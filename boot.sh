@@ -32,6 +32,10 @@ if [[ $EUID -eq 0 ]]; then
         echo "Installation cancelled."
         exit 1
     fi
+else
+    echo "Refreshing sudo credentials (you may be prompted for your password)..."
+    sudo -v
+    echo ""
 fi
 
 # Determine if running in online mode (curl | bash) or local mode
@@ -68,9 +72,10 @@ if [[ -z "$SCRIPT_DIR" ]] || [[ ! -f "$SCRIPT_DIR/install.sh" ]]; then
     echo ""
     echo "Installation starting..."
     UMBRARCH_IS_ONLINE_INSTALL=true
-    cd ~/.local/share/umbrarch
-    source install.sh
+    INSTALL_DIR=~/.local/share/umbrarch
 else
-    cd "$SCRIPT_DIR"
-    source install.sh
+    INSTALL_DIR="$SCRIPT_DIR"
 fi
+
+cd "$INSTALL_DIR"
+source install.sh
