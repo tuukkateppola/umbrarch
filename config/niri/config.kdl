@@ -268,6 +268,13 @@ layout {
 // which may be more convenient to use.
 // See the binds section below for more spawn examples.
 
+// Set environment variables for all applications
+environment {
+    // Disable portal detection so libadwaita apps (like Nautilus 49+) read gsettings directly
+    // This is required for dark theme to work with libadwaita apps
+    ADW_DISABLE_PORTAL "1"
+}
+
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "waybar"
 
