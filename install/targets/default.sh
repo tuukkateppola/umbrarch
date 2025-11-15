@@ -7,6 +7,7 @@
 # - If a script exists in install/packages/, it will be sourced
 # - Otherwise, the package will be installed directly via yay
 export PACKAGES=(
+  fontconfig
   jetbrains-font
   niri
   waybar
