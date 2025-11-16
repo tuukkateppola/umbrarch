@@ -8,18 +8,12 @@ log_info "Installing GTK dependencies..."
 ensure_pacman_pkg gnome-themes-extra
 ensure_pacman_pkg adwaita-icon-theme
 ensure_pacman_pkg papirus-icon-theme
-ensure_pacman_pkg xdg-desktop-portal
-ensure_pacman_pkg xdg-desktop-portal-wlr
-ensure_pacman_pkg xdg-desktop-portal-gtk
 
 log_info "Deploying GTK3 configuration..."
 deploy_config "$UMBRARCH_CONFIG/gtk-3.0/settings.ini" ~/.config/gtk-3.0/settings.ini
 
 log_info "Deploying GTK4 configuration..."
 deploy_config "$UMBRARCH_CONFIG/gtk-4.0/settings.ini" ~/.config/gtk-4.0/settings.ini
-
-log_info "Configuring xdg-desktop-portal..."
-deploy_config "$UMBRARCH_CONFIG/xdg-desktop-portal/portals.conf" ~/.config/xdg-desktop-portal/portals.conf
 
 # Set gsettings for libadwaita apps (GTK4 apps like Nautilus 49+ ignore config files)
 log_info "Setting gsettings for dark theme..."
@@ -47,9 +41,6 @@ if command -v flatpak >/dev/null 2>&1; then
 else
     log_info "Flatpak not installed, skipping Flatpak overrides"
 fi
-
-log_info "Restarting xdg-desktop-portal services..."
-killall xdg-desktop-portal xdg-desktop-portal-wlr 2>/dev/null || true
 
 log_success "GTK theme configuration complete"
 

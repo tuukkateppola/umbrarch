@@ -25,6 +25,7 @@ export PACKAGES=(
 # Features to configure (must have corresponding scripts in install/features/)
 export FEATURES=(
   x-wayland-compat
+  wayland-portals
   git-config
   work-on-umbrarch
   gtk-theme
