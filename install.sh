@@ -101,3 +101,10 @@ if [[ "${UMBRARCH_IS_ONLINE_INSTALL:-false}" == "true" ]]; then
     }
 fi
 
+if ask_yesno "Reboot now to apply all changes?" "yes"; then
+    log_info "Rebooting system..."
+    sudo reboot
+else
+    log_info "Skipping reboot. You may need to reboot later."
+fi
+
