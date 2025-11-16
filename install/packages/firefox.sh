@@ -18,10 +18,8 @@ PROFILE_DIR=$(find "$FIREFOX_PROFILE_DIR" -maxdepth 1 -type d -name "*.default*"
 if [[ -z "$PROFILE_DIR" || ! -d "$PROFILE_DIR" ]]; then
     log_info "Creating Firefox profile structure..."
     
-    # Generate a random profile prefix (like Firefox does)
-    # Format: 8 random lowercase characters + ".default-release"
-    PROFILE_PREFIX=$(tr -dc 'a-z0-9' < /dev/urandom | head -c 8)
-    PROFILE_NAME="${PROFILE_PREFIX}.default-release"
+    # Use a simple hardcoded profile name
+    PROFILE_NAME="default.default-release"
     PROFILE_DIR="$FIREFOX_PROFILE_DIR/$PROFILE_NAME"
     
     ensure_dir "$PROFILE_DIR"
