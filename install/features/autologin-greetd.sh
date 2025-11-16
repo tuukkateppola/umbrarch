@@ -34,7 +34,7 @@ log_info "Installing greetd and tuigreet..."
 ensure_pacman_pkg greetd
 ensure_pacman_pkg greetd-tuigreet
 
-NIRI_SESSION_WRAPPER="$HOME/.local/bin/niri-session"
+NIRI_SESSION_WRAPPER="/usr/local/bin/niri-session"
 NIRI_SESSION_BINARY="/usr/bin/niri-session"
 
 if [[ ! -f "$NIRI_SESSION_BINARY" ]]; then
@@ -42,14 +42,12 @@ if [[ ! -f "$NIRI_SESSION_BINARY" ]]; then
     log_warn "You may need to install niri first"
 fi
 
-ensure_dir "$HOME/.local/bin"
-
 if [[ -f "$NIRI_SESSION_WRAPPER" ]]; then
     log_info "niri-session wrapper already exists at $NIRI_SESSION_WRAPPER, skipping"
 else
     log_info "Deploying niri-session wrapper..."
-    cp "$UMBRARCH_CONFIG/greetd/niri-session" "$NIRI_SESSION_WRAPPER"
-    chmod +x "$NIRI_SESSION_WRAPPER"
+    sudo cp "$UMBRARCH_CONFIG/greetd/niri-session" "$NIRI_SESSION_WRAPPER"
+    sudo chmod +x "$NIRI_SESSION_WRAPPER"
     log_success "Deployed niri-session wrapper"
 fi
 
