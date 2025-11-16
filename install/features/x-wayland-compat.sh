@@ -5,7 +5,6 @@ log_info "Installing X/Wayland compatibility packages..."
 
 ensure_pacman_pkg xdg-desktop-portal
 ensure_pacman_pkg xdg-desktop-portal-gtk
-ensure_pacman_pkg xdg-desktop-portal-gnome
 ensure_pacman_pkg xwayland-satellite
 
 log_info "Checking portal services status..."

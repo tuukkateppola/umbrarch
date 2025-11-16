@@ -275,6 +275,11 @@ environment {
     ADW_DISABLE_PORTAL "1"
     // Set GTK theme globally so all applications (including child processes) use dark theme
     GTK_THEME "Adwaita-dark"
+    GTK_APPLICATION_PREFER_DARK_THEME "1"
+    GDK_BACKEND "wayland"
+    //GTK_USE_PORTAL=1
+    XDG_CURRENT_DESKTOP="niri"
+    GTK_ENABLE_PRIMARY_MONITOR="1"
 }
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
