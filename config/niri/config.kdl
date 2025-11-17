@@ -285,6 +285,9 @@ environment {
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "waybar"
 
+// Start mako notification daemon
+spawn-at-startup "mako"
+
 // Set wallpaper using swaybg
 // Using fill mode to cover the entire screen without distortion
 spawn-sh-at-startup "swaybg -i ~/Pictures/Wallpapers/wallhaven-r2oo8j_3440x1440.png -m fill"
