@@ -13,7 +13,7 @@ WALLPAPER_URL="https://w.wallhaven.cc/full/yq/wallhaven-yqxzol.jpg"
 
 if [[ ! -f "$WALLPAPER_FILE" ]]; then
     log_info "Downloading default wallpaper..."
-    if curl -L -o "$WALLPAPER_FILE" "$WALLPAPER_URL"; then
+    if run_verbose curl -L -o "$WALLPAPER_FILE" "$WALLPAPER_URL"; then
         log_success "Downloaded default wallpaper to $WALLPAPER_FILE"
     else
         log_error "Failed to download default wallpaper"

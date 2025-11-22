@@ -17,6 +17,14 @@ TEMP_DIR=$(mktemp -d)
 trap 'cd "$START_DIR" 2>/dev/null; rm -rf "$TEMP_DIR"' EXIT
 
 log_info "Cloning yay-bin from AUR..."
+
+if [[ "${UMBRARCH_DRY_RUN:-false}" == "true" ]]; then
+    log_info "[DRY RUN] Skipping yay build and install"
+    # Mock success for dry run
+    log_success "[DRY RUN] yay installation simulated"
+    return 0
+fi
+
 cd "$TEMP_DIR" || exit
 run_verbose git clone https://aur.archlinux.org/yay-bin.git
 cd yay-bin || exit

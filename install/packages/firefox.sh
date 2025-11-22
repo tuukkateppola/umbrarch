@@ -5,6 +5,11 @@ log_info "Installing firefox..."
 
 ensure_pacman_pkg firefox
 
+if [[ "${UMBRARCH_DRY_RUN:-false}" == "true" ]]; then
+    log_info "[DRY RUN] Would configure Firefox profile and dark theme"
+    return 0
+fi
+
 log_info "Configuring Firefox dark theme..."
 
 FIREFOX_PROFILE_DIR="$HOME/.mozilla/firefox"
