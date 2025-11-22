@@ -25,6 +25,7 @@ if [[ ! -f "$UMBRARCH_INSTALL/lib.sh" ]]; then
     exit 1
 fi
 source "$UMBRARCH_INSTALL/lib.sh"
+init_logs
 
 log_info "=== UmbrArch Installation Started ==="
 
@@ -89,7 +90,8 @@ else
 fi
 
 log_success "=== UmbrArch Installation Complete ==="
-log_info "Review the installation log at: $UMBRARCH_LOG_FILE"
+log_info "Installation log: $UMBRARCH_LOG_FILE"
+log_info "Debug log: $UMBRARCH_DEBUG_LOG"
 
 if [[ "${UMBRARCH_IS_ONLINE_INSTALL:-false}" == "true" ]]; then
     log_info "Cleaning up installation files..."

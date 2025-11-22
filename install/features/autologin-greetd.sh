@@ -46,8 +46,8 @@ if [[ -f "$NIRI_SESSION_WRAPPER" ]]; then
     log_info "niri-session wrapper already exists at $NIRI_SESSION_WRAPPER, skipping"
 else
     log_info "Deploying niri-session wrapper..."
-    sudo cp "$UMBRARCH_CONFIG/greetd/niri-session" "$NIRI_SESSION_WRAPPER"
-    sudo chmod +x "$NIRI_SESSION_WRAPPER"
+    run_verbose sudo cp "$UMBRARCH_CONFIG/greetd/niri-session" "$NIRI_SESSION_WRAPPER"
+    run_verbose sudo chmod +x "$NIRI_SESSION_WRAPPER"
     log_success "Deployed niri-session wrapper"
 fi
 
@@ -60,24 +60,19 @@ sed "s/{USER}/$USER/g" "$UMBRARCH_CONFIG/greetd/config.toml.template" > "$TEMP_C
 if [[ -f "$GREETD_CONFIG" ]]; then
     BACKUP_FILE="${GREETD_CONFIG}.backup.$(date +%Y%m%d_%H%M%S)"
     log_info "Backing up existing greetd config to $BACKUP_FILE"
-    sudo cp "$GREETD_CONFIG" "$BACKUP_FILE"
+    run_verbose sudo cp "$GREETD_CONFIG" "$BACKUP_FILE"
     log_success "Backed up greetd config"
 else
     log_info "No existing greetd config found, creating new one"
-    sudo mkdir -p "$(dirname "$GREETD_CONFIG")"
+    run_verbose sudo mkdir -p "$(dirname "$GREETD_CONFIG")"
 fi
 
-sudo cp "$TEMP_CONFIG" "$GREETD_CONFIG"
+run_verbose sudo cp "$TEMP_CONFIG" "$GREETD_CONFIG"
 rm "$TEMP_CONFIG"
 log_success "Deployed greetd config"
 
 log_info "Enabling greetd.service..."
-if ! sudo systemctl is-enabled greetd.service &>/dev/null; then
-    sudo systemctl enable greetd.service
-    log_success "greetd.service enabled"
-else
-    log_info "greetd.service is already enabled"
-fi
+ensure_service "greetd.service"
 
 log_success "greetd autologin configuration complete"
 log_info "The system will automatically log in to niri on next boot"

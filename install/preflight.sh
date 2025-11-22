@@ -18,8 +18,12 @@ fi
 log_success "Arch Linux detected"
 
 log_info "Updating system packages..."
-sudo pacman -Syu --noconfirm
-log_success "System packages updated"
+if run_verbose sudo pacman -Syu --noconfirm; then
+    log_success "System packages updated"
+else
+    log_error "Failed to update system packages. Check $UMBRARCH_DEBUG_LOG for details."
+    return 1
+fi
 
 log_info "Installing prerequisites..."
 ensure_pacman_pkg base-devel

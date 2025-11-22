@@ -69,29 +69,8 @@ case "$VM_TYPE" in
         ensure_pacman_pkg open-vm-tools
         
         log_info "Enabling VMware services..."
-        if systemctl is-enabled vmtoolsd.service &>/dev/null; then
-            log_info "vmtoolsd.service is already enabled"
-        else
-            sudo systemctl enable vmtoolsd.service
-            log_success "vmtoolsd.service enabled"
-        fi
-        
-        if systemctl is-enabled vmware-vmblock-fuse.service &>/dev/null; then
-            log_info "vmware-vmblock-fuse.service is already enabled"
-        else
-            sudo systemctl enable vmware-vmblock-fuse.service
-            log_success "vmware-vmblock-fuse.service enabled"
-        fi
-        
-        if ! systemctl is-active --quiet vmtoolsd.service 2>/dev/null; then
-            sudo systemctl start vmtoolsd.service
-            log_info "vmtoolsd.service started"
-        fi
-        
-        if ! systemctl is-active --quiet vmware-vmblock-fuse.service 2>/dev/null; then
-            sudo systemctl start vmware-vmblock-fuse.service
-            log_info "vmware-vmblock-fuse.service started"
-        fi
+        ensure_service "vmtoolsd.service"
+        ensure_service "vmware-vmblock-fuse.service"
         
         log_success "VMware guest tools configured"
         ;;
@@ -101,17 +80,7 @@ case "$VM_TYPE" in
         ensure_pacman_pkg qemu-guest-agent
         
         log_info "Enabling QEMU guest agent service..."
-        if systemctl is-enabled qemu-guest-agent.service &>/dev/null; then
-            log_info "qemu-guest-agent.service is already enabled"
-        else
-            sudo systemctl enable qemu-guest-agent.service
-            log_success "qemu-guest-agent.service enabled"
-        fi
-        
-        if ! systemctl is-active --quiet qemu-guest-agent.service 2>/dev/null; then
-            sudo systemctl start qemu-guest-agent.service
-            log_info "qemu-guest-agent.service started"
-        fi
+        ensure_service "qemu-guest-agent.service"
         
         log_success "QEMU guest agent configured"
         ;;
@@ -121,17 +90,7 @@ case "$VM_TYPE" in
         ensure_pacman_pkg virtualbox-guest-utils
         
         log_info "Enabling VirtualBox guest service..."
-        if systemctl is-enabled vboxservice.service &>/dev/null; then
-            log_info "vboxservice.service is already enabled"
-        else
-            sudo systemctl enable vboxservice.service
-            log_success "vboxservice.service enabled"
-        fi
-        
-        if ! systemctl is-active --quiet vboxservice.service 2>/dev/null; then
-            sudo systemctl start vboxservice.service
-            log_info "vboxservice.service started"
-        fi
+        ensure_service "vboxservice.service"
         
         log_success "VirtualBox guest utilities configured"
         ;;

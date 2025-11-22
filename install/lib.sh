@@ -7,15 +7,16 @@
 set -euo pipefail
 
 : "${UMBRARCH_LOG_FILE:="$HOME/.umbrarch-install.log"}"
+: "${UMBRARCH_DEBUG_LOG:="$HOME/.umbrarch-install-debug.log"}"
 
 _umbrarch_timestamp() {
     date '+%Y-%m-%d %H:%M:%S'
 }
 
-_umbrarch_touch_log() {
-    if [[ ! -e "$UMBRARCH_LOG_FILE" ]]; then
-        touch "$UMBRARCH_LOG_FILE"
-    fi
+init_logs() {
+    # Initialize/truncate log files
+    : > "$UMBRARCH_LOG_FILE"
+    : > "$UMBRARCH_DEBUG_LOG"
 }
 
 _umbrarch_log_append() {
@@ -23,8 +24,26 @@ _umbrarch_log_append() {
     shift
     local message="$*"
 
-    _umbrarch_touch_log
-    printf '%s [%s] %s\n' "$(_umbrarch_timestamp)" "$level" "$message" >>"$UMBRARCH_LOG_FILE"
+    local timestamp
+    timestamp="$(_umbrarch_timestamp)"
+    printf '%s [%s] %s\n' "$timestamp" "$level" "$message" >>"$UMBRARCH_LOG_FILE"
+    printf '%s [%s] %s\n' "$timestamp" "$level" "$message" >>"$UMBRARCH_DEBUG_LOG"
+}
+
+# Runs a command, redirecting stdout/stderr to the debug log
+# Usage: run_verbose command [args...]
+run_verbose() {
+    if [[ $# -eq 0 ]]; then
+        return 0
+    fi
+    
+    echo ">> Running: $*" >>"$UMBRARCH_DEBUG_LOG"
+    
+    "$@" >>"$UMBRARCH_DEBUG_LOG" 2>&1
+    local status=$?
+    
+    echo ">> Exit code: $status" >>"$UMBRARCH_DEBUG_LOG"
+    return "$status"
 }
 
 log_info() {
@@ -148,8 +167,12 @@ ensure_pacman_pkg() {
     fi
 
     log_info "Installing $package via pacman"
-    sudo pacman -S --noconfirm --needed "$package"
-    log_success "Installed $package via pacman"
+    if run_verbose sudo pacman -S --noconfirm --needed "$package"; then
+        log_success "Installed $package via pacman"
+    else
+        log_error "Failed to install $package via pacman. Check $UMBRARCH_DEBUG_LOG for details."
+        return 1
+    fi
 }
 
 ensure_yay_pkg() {
@@ -166,8 +189,12 @@ ensure_yay_pkg() {
     fi
 
     log_info "Installing $package via yay"
-    yay -S --noconfirm --needed "$package"
-    log_success "Installed $package via yay"
+    if run_verbose yay -S --noconfirm --needed "$package"; then
+        log_success "Installed $package via yay"
+    else
+        log_error "Failed to install $package via yay. Check $UMBRARCH_DEBUG_LOG for details."
+        return 1
+    fi
 }
 
 deploy_config() {
@@ -183,9 +210,9 @@ deploy_config() {
         ensure_dir "$dst"
 
         if command -v rsync >/dev/null 2>&1; then
-            rsync -a --delete "$src"/ "$dst"/
+            run_verbose rsync -a --delete "$src"/ "$dst"/
         else
-            cp -a "$src"/. "$dst"/
+            run_verbose cp -a "$src"/. "$dst"/
         fi
 
         log_success "Synced directory: $src -> $dst"
@@ -202,12 +229,43 @@ deploy_config() {
 
         local backup
         backup="${dst}.backup.$(date +%Y%m%d_%H%M%S)"
-        cp -p "$dst" "$backup"
+        run_verbose cp -p "$dst" "$backup"
         log_warn "Existing config backed up to $backup"
     fi
 
-    cp -p "$src" "$dst"
+    run_verbose cp -p "$src" "$dst"
     log_success "Deployed config: $src -> $dst"
+}
+
+ensure_service() {
+    local service=$1
+    local scope=${2:-system}
+
+    local ctl_cmd="systemctl"
+    local sudo_cmd="sudo"
+    local flags=""
+
+    if [[ "$scope" == "user" ]]; then
+        ctl_cmd="systemctl --user"
+        sudo_cmd=""
+        flags="--user"
+    fi
+
+    log_info "Ensuring service is active: $service ($scope)"
+
+    if ! $ctl_cmd is-enabled "$service" &>/dev/null; then
+        run_verbose $sudo_cmd systemctl $flags enable "$service"
+        log_success "Enabled $service"
+    else
+        log_info "$service is already enabled"
+    fi
+
+    if ! $ctl_cmd is-active --quiet "$service" 2>/dev/null; then
+        run_verbose $sudo_cmd systemctl $flags start "$service"
+        log_success "Started $service"
+    else
+        log_info "$service is already started"
+    fi
 }
 
 run_step() {

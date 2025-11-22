@@ -22,11 +22,11 @@ if ! command -v gsettings >/dev/null 2>&1; then
     return 1
 fi
 
-gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark' 2>/dev/null || {
+run_verbose gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark' || {
     log_error "Could not set gtk-theme via gsettings"
     return 1
 }
-gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || {
+run_verbose gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' || {
     log_error "Could not set color-scheme via gsettings"
     return 1
 }
@@ -34,9 +34,9 @@ log_success "gsettings configured for dark theme"
 
 log_info "Configuring Flatpak applications..."
 if command -v flatpak >/dev/null 2>&1; then
-    flatpak override --user --env=GTK_THEME=Adwaita-dark 2>/dev/null || log_warn "Could not set Flatpak GTK_THEME override"
-    flatpak override --user --env=GTK_APPLICATION_PREFER_DARK_THEME=1 2>/dev/null || log_warn "Could not set Flatpak GTK_APPLICATION_PREFER_DARK_THEME override"
-    flatpak override --user --env=GTK_USE_PORTAL=1 2>/dev/null || log_warn "Could not set Flatpak GTK_USE_PORTAL override"
+    run_verbose flatpak override --user --env=GTK_THEME=Adwaita-dark || log_warn "Could not set Flatpak GTK_THEME override"
+    run_verbose flatpak override --user --env=GTK_APPLICATION_PREFER_DARK_THEME=1 || log_warn "Could not set Flatpak GTK_APPLICATION_PREFER_DARK_THEME override"
+    run_verbose flatpak override --user --env=GTK_USE_PORTAL=1 || log_warn "Could not set Flatpak GTK_USE_PORTAL override"
     log_success "Flatpak dark theme overrides configured"
 else
     log_info "Flatpak not installed, skipping Flatpak overrides"

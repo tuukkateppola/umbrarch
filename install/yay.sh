@@ -18,11 +18,11 @@ trap 'cd "$START_DIR" 2>/dev/null; rm -rf "$TEMP_DIR"' EXIT
 
 log_info "Cloning yay-bin from AUR..."
 cd "$TEMP_DIR" || exit
-git clone https://aur.archlinux.org/yay-bin.git >/dev/null 2>&1
+run_verbose git clone https://aur.archlinux.org/yay-bin.git
 cd yay-bin || exit
 
 log_info "Building yay..."
-makepkg -s --noconfirm
+run_verbose makepkg -s --noconfirm
 
 log_info "Installing yay..."
 PKG_FILE=$(ls -t yay-bin-*.pkg.tar* 2>/dev/null | grep -v "debug" | head -1)
@@ -33,7 +33,7 @@ if [[ -z "$PKG_FILE" ]]; then
 fi
 
 log_info "Installing package: $PKG_FILE"
-sudo pacman -U --noconfirm "$PKG_FILE"
+run_verbose sudo pacman -U --noconfirm "$PKG_FILE"
 
 cd "$START_DIR" || true
 
