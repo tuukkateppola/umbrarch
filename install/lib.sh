@@ -194,8 +194,12 @@ ensure_yay_pkg() {
     fi
 
     if ! command -v yay >/dev/null 2>&1; then
-        log_error "yay is required but not found in PATH."
-        return 1
+        if [[ "${UMBRARCH_DRY_RUN:-false}" == "true" ]]; then
+            log_info "[DRY RUN] yay check skipped (assumed missing/simulated)"
+        else
+            log_error "yay is required but not found in PATH."
+            return 1
+        fi
     fi
 
     log_info "Installing $package via yay"
