@@ -290,7 +290,7 @@ spawn-at-startup "mako"
 
 // Set wallpaper using swaybg
 // Using fill mode to cover the entire screen without distortion
-spawn-sh-at-startup "swaybg -i ~/Pictures/Wallpapers/wallhaven-r2oo8j_3440x1440.png -m fill"
+spawn-sh-at-startup "swaybg -i ~/Pictures/Wallpapers/default.jpg -m fill"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
@@ -393,6 +393,7 @@ binds {
     // For example, this is a standard bind to toggle the screen reader (orca).
     //Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
     Mod+Shift+W hotkey-overlay-title="Restart Waybar" { spawn-sh "pkill waybar && waybar"; }
+    Mod+Shift+S hotkey-overlay-title="Switch Wallpaper" { spawn-sh "pkill swaybg && swaybg -i \"$(find ~/Pictures/Wallpapers -type f | shuf -n 1)\" -m fill"; }
 
     // Example volume keys mappings for PipeWire & WirePlumber.
     // The allow-when-locked=true property makes them work even when the session is locked.

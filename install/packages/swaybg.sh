@@ -8,12 +8,21 @@ ensure_pacman_pkg swaybg
 log_info "Ensuring wallpaper directory exists..."
 ensure_dir ~/Pictures/Wallpapers
 
-WALLPAPER_FILE="$HOME/Pictures/Wallpapers/wallpaper.png"
+WALLPAPER_FILE="$HOME/Pictures/Wallpapers/default.jpg"
+WALLPAPER_URL="https://w.wallhaven.cc/full/yq/wallhaven-yqxzol.jpg"
 
 if [[ ! -f "$WALLPAPER_FILE" ]]; then
-    log_warn "Wallpaper file not found: $WALLPAPER_FILE"
-    log_warn "Please place your wallpaper image at: $WALLPAPER_FILE"
+    log_info "Downloading default wallpaper..."
+    if curl -L -o "$WALLPAPER_FILE" "$WALLPAPER_URL"; then
+        log_success "Downloaded default wallpaper to $WALLPAPER_FILE"
+    else
+        log_error "Failed to download default wallpaper"
+    fi
+else
+    log_info "Default wallpaper already exists at $WALLPAPER_FILE"
 fi
 
-log_success "swaybg installed and wallpaper directory ready"
+log_success "swaybg installed and wallpaper configured"
+log_info "You can add more wallpapers to ~/Pictures/Wallpapers/"
+log_info "Use Mod+Shift+S in niri to switch to a random wallpaper from that folder"
 
