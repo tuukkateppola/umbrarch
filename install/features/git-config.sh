@@ -6,6 +6,12 @@ log_info "Checking Git configuration..."
 CURRENT_NAME=$(git config --global user.name 2>/dev/null || echo "")
 CURRENT_EMAIL=$(git config --global user.email 2>/dev/null || echo "")
 
+if [[ "${UMBRARCH_DRY_RUN:-false}" == "true" ]]; then
+    log_info "[DRY RUN] Would configure Git identity (current: name='$CURRENT_NAME', email='$CURRENT_EMAIL')"
+    log_success "Git configuration complete (simulated)"
+    return 0
+fi
+
 if [[ -n "$CURRENT_NAME" && -n "$CURRENT_EMAIL" ]]; then
     log_info "Git user.name is set to: $CURRENT_NAME"
     log_info "Git user.email is set to: ${CURRENT_EMAIL%%@*}@***"

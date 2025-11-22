@@ -9,6 +9,12 @@ ensure_pacman_pkg xdg-desktop-portal-wlr
 ensure_pacman_pkg xdg-desktop-portal-gtk
 ensure_pacman_pkg pipewire
 
+if [[ "${UMBRARCH_DRY_RUN:-false}" == "true" ]]; then
+    log_info "[DRY RUN] Would configure Wayland desktop portals and start services"
+    log_success "Wayland desktop portals configuration complete (simulated)"
+    return 0
+fi
+
 log_info "Configuring xdg-desktop-portal..."
 deploy_config "$UMBRARCH_CONFIG/xdg-desktop-portal/portals.conf" ~/.config/xdg-desktop-portal/portals.conf
 

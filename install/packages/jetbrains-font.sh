@@ -13,7 +13,7 @@ ensure_yay_pkg ttf-jetbrains-mono-nerd
 # Refresh font cache only if package was newly installed
 if [[ "$WAS_INSTALLED" == "false" ]]; then
     log_info "Refreshing font cache..."
-    fc-cache -f
+    run_verbose fc-cache -f
     log_success "Font cache refreshed"
 fi
 
