@@ -37,6 +37,11 @@ run_verbose() {
         return 0
     fi
     
+    if [[ "${UMBRARCH_DRY_RUN:-false}" == "true" ]]; then
+        echo "[DRY RUN] Would run: $*" >>"$UMBRARCH_DEBUG_LOG"
+        return 0
+    fi
+    
     echo ">> Running: $*" >>"$UMBRARCH_DEBUG_LOG"
     
     "$@" >>"$UMBRARCH_DEBUG_LOG" 2>&1
@@ -151,6 +156,11 @@ ensure_dir() {
     local target=$1
 
     if [[ -d "$target" ]]; then
+        return 0
+    fi
+
+    if [[ "${UMBRARCH_DRY_RUN:-false}" == "true" ]]; then
+        log_info "[DRY RUN] Would create directory: $target"
         return 0
     fi
 

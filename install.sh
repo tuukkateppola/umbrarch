@@ -19,6 +19,16 @@ export UMBRARCH_PATH
 export UMBRARCH_INSTALL
 export UMBRARCH_CONFIG
 
+export UMBRARCH_DRY_RUN="${UMBRARCH_DRY_RUN:-false}"
+for arg in "$@"; do
+    case $arg in
+        --dry-run)
+            UMBRARCH_DRY_RUN=true
+            shift
+            ;;
+    esac
+done
+
 if [[ ! -f "$UMBRARCH_INSTALL/lib.sh" ]]; then
     echo "[ERROR] install/lib.sh not found at $UMBRARCH_INSTALL/lib.sh. Current directory: $(pwd)" >&2
     echo "[ERROR] Please ensure install.sh is run from the repository root." >&2
@@ -26,6 +36,11 @@ if [[ ! -f "$UMBRARCH_INSTALL/lib.sh" ]]; then
 fi
 source "$UMBRARCH_INSTALL/lib.sh"
 init_logs
+
+if [[ "$UMBRARCH_DRY_RUN" == "true" ]]; then
+    log_info "!!! DRY RUN MODE ACTIVE !!!"
+    log_info "No changes will be made to the system."
+fi
 
 log_info "=== UmbrArch Installation Started ==="
 
@@ -92,6 +107,11 @@ fi
 log_success "=== UmbrArch Installation Complete ==="
 log_info "Installation log: $UMBRARCH_LOG_FILE"
 log_info "Debug log: $UMBRARCH_DEBUG_LOG"
+
+if [[ "$UMBRARCH_DRY_RUN" == "true" ]]; then
+    log_info "Dry run complete. Skipping cleanup and reboot."
+    return 0
+fi
 
 if [[ "${UMBRARCH_IS_ONLINE_INSTALL:-false}" == "true" ]]; then
     log_info "Cleaning up installation files..."
